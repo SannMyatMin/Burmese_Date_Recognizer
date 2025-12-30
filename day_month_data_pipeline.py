@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from pathlib import Path
+from sklearn.model_selection import train_test_split
 
 class DayMonth_data_pipeline:
     def __init__(self, data_dir, batch_size=32, img_size=(64,64)):
@@ -26,4 +27,13 @@ class DayMonth_data_pipeline:
         self.image_dataframe = pd.DataFrame(data)
         return self.image_dataframe
 
+    def get_train_val_data(self):
+        df = self.create_image_dataframe()
+        train, val = train_test_split(
+            df,
+            test_size = 0.2,
+            stratify = df["label"],
+            random_state = 42
+        )
+        return train, val
     
