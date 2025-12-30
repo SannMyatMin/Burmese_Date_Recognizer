@@ -3,6 +3,7 @@ from tensorflow.keras import models, layers
 
 class DayMonth_Predictor:
     def __init__(self, num_classes=32, shape=(64, 64, 3)):
+        self.model = None
         self.shape = shape
         self.num_classes = num_classes
 
@@ -26,5 +27,31 @@ class DayMonth_Predictor:
         x = layers.Dropout(0.5)(x)
 
         output = layers.Dense(self.num_classes, activation="softmax")(x)
-        return models.Model(input, output)
+        cnn_model = models.Model(input, output)
+        self.model = cnn_model
+        return self.model
 
+    def compile_model(self):
+        self.model.compile(
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.001),
+            loss = "sparse_categorical_crossentropy",
+            metrics = ["accuracy"]
+        )
+        print("Model is compiled successfully")
+
+    def get_callbacks(self):
+        callbacks = [
+            tf.keras.callbacks.EarlyStopping(patience=8, restore_best_weights=True, verbose=1),
+            tf.keras.callbacks.ReduceLROnPlateau(patience=3, factor=0.3, verbose=1)
+        ]
+        return callbacks
+    
+    def train_model(self, train_ds, val_ds, epochs):
+        history = self.model.fit(
+            train_ds,
+            validation_data = val_ds,
+            epochs = epochs,
+            callbacks = self.get_callbacks()
+        )
+        print("Model is trained successfully")
+        return history
