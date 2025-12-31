@@ -3,8 +3,8 @@ from tensorflow.keras import models, layers
 
 class DayMonth_Predictor:
     def __init__(self, num_classes=32, shape=(64, 64, 3)):
-        self.model = None
-        self.shape = shape
+        self.model       = None
+        self.shape       = shape
         self.num_classes = num_classes
 
     def build_cnn(self):
